@@ -2,6 +2,7 @@ service: serverless-tutorme
 custom:
   studentTable: 'student-table-${self:provider.stage}'
   teacherTable: 'teacher-details-table-${self:provider.stage}'
+  authTable: 'auth-table-${self:provider.stage}'
 
 provider:
   name: aws 
@@ -21,6 +22,7 @@ provider:
   environment:
     STUDENT_TABLE: ${self:custom.studentTable}
     TEACHER_TABLE: ${self:custom.teacherTable}
+    AUTH_TABLE: ${self:custom.authTable}
 
 functions:
   app:
@@ -68,3 +70,19 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:custom.teacherTable}
+
+    TeachersDynamoDBTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: userName
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: userName
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.authTable}

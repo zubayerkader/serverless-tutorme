@@ -28,7 +28,7 @@ module.exports.server = async event => {
   // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
 };
 
-// One function for add Student or Teacher, API: /add/student, /add/teacher
+// One function for add Student or Teacher, select table using type, API: /add 
 
 // zubayr
 app.post('/addStudent', (req, res) => {
@@ -53,6 +53,7 @@ app.post('/addStudent', (req, res) => {
         {
             putItem: {
                 TableName: STUDENT_TABLE
+                // Is it possible to set userName primary key?
                 // Key: { id: { S: username } },
                 Item: {
                   "userName": username,
