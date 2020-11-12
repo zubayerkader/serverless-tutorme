@@ -71,7 +71,7 @@ resources:
           WriteCapacityUnits: 1
         TableName: ${self:custom.teacherTable}
 
-    TeachersDynamoDBTable:
+    AuthDynamoDBTable:
       Type: 'AWS::DynamoDB::Table'
       Properties:
         AttributeDefinitions:

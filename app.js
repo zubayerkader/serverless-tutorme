@@ -28,8 +28,7 @@ module.exports.server = async event => {
   // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
 };
 
-// One function for add Student or Teacher, select table using type, API: /add 
-
+// One function for adding Student or Teacher, select table using type, API: /add 
 // zubayr
 app.post('/addStudent', (req, res) => {
     // let post = req.body;
@@ -48,11 +47,13 @@ app.post('/addStudent', (req, res) => {
       type,
     } = req.body;
 
+    tableName = type === 'student' ? STUDENT_TABLE : TEACHER_TABLE
+
     data = await dynamoDb.transactWriteItems({
       TransactItems: [
         {
             putItem: {
-                TableName: STUDENT_TABLE
+                TableName: tableName
                 // Is it possible to set userName primary key?
                 // Key: { id: { S: username } },
                 Item: {
@@ -78,16 +79,6 @@ app.post('/addStudent', (req, res) => {
       ]
     }).promise().catch(error => alert(error.message));
 
-});
-
-//zubayr
-app.post('/addTeacher', (req, res) => {
-    let post = req.body;
-    let sql = 'INSERT INTO teacher SET ?';
-    let query = db.query(sql, post, (err, result) => {
-        if(err) throw err;
-        res.send('Teacher added...');
-    });
 });
 
 // arslan
