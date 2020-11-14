@@ -1,8 +1,9 @@
 service: serverless-tutorme
+app: tutorme
 custom:
-  studentTable: 'student-table-${self:provider.stage}'
-  teacherTable: 'teacher-details-table-${self:provider.stage}'
-  authTable: 'auth-table-${self:provider.stage}'
+	studentTable: 'student-details-table-${self:provider.stage}'
+	teacherTable: 'teacher-details-table-${self:provider.stage}'
+	authTable: 'auth-table-${self:provider.stage}'
 
 provider:
   name: aws 
@@ -24,65 +25,116 @@ provider:
     TEACHER_TABLE: ${self:custom.teacherTable}
     AUTH_TABLE: ${self:custom.authTable}
 
-functions:
-  app:
-    handler: app.server
-    events:
-      - http:
-          path: /
-          method: ANY
-          cors: true
-      - http:
-          path: /{proxy+}
-          method: ANY
-          cors: true
-          
-resources:
-  Resources:
-    StudentsDynamoDBTable:
-      Type: 'AWS::DynamoDB::Table'
-      Properties:
-        AttributeDefinitions:
-          -
-            AttributeName: userName
-            AttributeType: S
-        KeySchema:
-          -
-            AttributeName: userName
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:custom.studentTable}
-    
-    TeachersDynamoDBTable:
-      Type: 'AWS::DynamoDB::Table'
-      Properties:
-        AttributeDefinitions:
-          -
-            AttributeName: userName
-            AttributeType: S
-        KeySchema:
-          -
-            AttributeName: userName
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:custom.teacherTable}
+Functions:
+	# API Functions
+	AddNewUserFunction:
+		# Properties:
+		CodeUri: app-src/addNewUser
+		Handler: app.addNewUser
+		Tracing: Active
+		# Policies:
+		#   - DynamoDBReadPolicy:
+		#       TableName: !Ref TodoTable
+		#   - CloudWatchPutMetricPolicy: {}
+		# Environment:
+		#   Variables:
+		#     TABLE_NAME: !Ref TodoTable
+		#     AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+		#     USE_DYNAMODB_LOCAL: "0"
+		#     DYNAMODB_LOCAL_URI: ""
 
-    AuthDynamoDBTable:
-      Type: 'AWS::DynamoDB::Table'
-      Properties:
-        AttributeDefinitions:
-          -
-            AttributeName: userName
-            AttributeType: S
-        KeySchema:
-          -
-            AttributeName: userName
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:custom.authTable}
+		Events:
+			- http:
+					# Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+					# Properties:
+				Path: addNewUser
+				Method: post
+				RestApiId: !Ref addNewUser
+						# Auth:
+						#   Authorizer: CognitoAuthorizer
+
+	GetStudentFunction:
+		# Properties:
+		CodeUri: app-src/getStudent
+		Handler: app.getStudent
+		Tracing: Active
+		# Policies:
+		#   - DynamoDBReadPolicy:
+		#       TableName: !Ref TodoTable
+		#   - CloudWatchPutMetricPolicy: {}
+		# Environment:
+		#   Variables:
+		#     TABLE_NAME: !Ref TodoTable
+		#     AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+		#     USE_DYNAMODB_LOCAL: "0"
+		#     DYNAMODB_LOCAL_URI: ""
+
+		Events:
+			- http:
+					# Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+					# Properties:
+				Path: getStudent
+				Method: get
+				RestApiId: !Ref getStudent
+						# Auth:
+						#   Authorizer: CognitoAuthorizer
+
+Resources:
+
+	# DynamoDB Tables
+	StudentsDynamoDBTable:
+		Type: 'AWS::DynamoDB::Table'
+		Properties:
+			AttributeDefinitions:
+				-
+					AttributeName: userName
+					AttributeType: S
+			KeySchema:
+				-
+					AttributeName: userName
+					KeyType: HASH
+			ProvisionedThroughput:
+				ReadCapacityUnits: 1
+				WriteCapacityUnits: 1
+			TableName: ${self:custom.studentTable}
+	
+	TeachersDynamoDBTable:
+		Type: 'AWS::DynamoDB::Table'
+		Properties:
+			AttributeDefinitions:
+				-
+					AttributeName: userName
+					AttributeType: S
+			KeySchema:
+				-
+					AttributeName: userName
+					KeyType: HASH
+			ProvisionedThroughput:
+				ReadCapacityUnits: 1
+				WriteCapacityUnits: 1
+			TableName: ${self:custom.teacherTable}
+
+	AuthDynamoDBTable:
+		Type: 'AWS::DynamoDB::Table'
+		Properties:
+			AttributeDefinitions:
+				-
+					AttributeName: userName
+					AttributeType: S
+			KeySchema:
+				-
+					AttributeName: userName
+					KeyType: HASH
+			ProvisionedThroughput:
+				ReadCapacityUnits: 1
+				WriteCapacityUnits: 1
+			TableName: ${self:custom.authTable}
+
+
+
+
+
+
+
+
+
